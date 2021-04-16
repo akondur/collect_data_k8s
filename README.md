@@ -2,6 +2,12 @@
 
 A repository which helps provide a script to collect data from a K8S cluster which runs the Splunk Operator for K8S. It involves collecting data via kubectl commands, splunk data via diag etc..
 
+NOTE of caution, the script:  
+- Collects extensive data on your K8S cluster. If there is any data you'd like to keep private please avoid using the script(modify it as per your needs)
+- Generates splunk diag on all of your Splunk Instances running inside of Splunk Enterprise CR pods deployed by the operator. 
+
+If any of the above is not desired, please resort to collecting data manually.
+
 Requirements to run the script:
 
 - Kubeconfig context set to the cluster running the Splunk Operator for Kubernetes
