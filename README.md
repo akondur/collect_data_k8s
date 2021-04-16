@@ -42,7 +42,8 @@ Note: diags and logs are appropriately named with pod names as prefix
 
 On a K8S cluster with a **SHC(3 search heads, 1 deployer), IDXC(3 indexers, 1 cluster master), 1 Standalone, 1 License master** as such:
 
-$ kubectl get pods
+```
+kubectl get pods
 NAME                                  READY   STATUS    RESTARTS   AGE
 splunk-default-monitoring-console-0   1/1     Running   0          17m
 splunk-example-license-master-0       1/1     Running   0          18m
@@ -56,6 +57,7 @@ splunk-test-search-head-0             1/1     Running   0          6h3m
 splunk-test-search-head-1             1/1     Running   0          6h3m
 splunk-test-search-head-2             1/1     Running   0          6h3m
 splunk-test2-standalone-0             1/1     Running   0          6h5m
+```
 
 The script has the following performance:
 
