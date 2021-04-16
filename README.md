@@ -61,5 +61,7 @@ splunk-test2-standalone-0             1/1     Running   0          6h5m
 
 The script has the following performance:
 
-Time taken - **6 mins 40 seconds**
-Memory - **774.4 MB**
+```
+Time taken - 6 mins 40 seconds
+Memory - 774.4 MB
+```
