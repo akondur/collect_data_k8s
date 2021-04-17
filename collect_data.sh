@@ -1,24 +1,51 @@
+#Collect arguments
+helpFunction()
+{
+   echo ""
+   echo "Usage: $0 -d <is_diag_required> -f <destination_folder>"
+   echo "\t-d Set to true if you require diag. Field is mandatory"
+   echo "\t-f Provide destination folder to store data. Field is not mandatory"
+   echo "\t-h Displays usage of script"
+   exit 1 # Exit script after printing help
+}
+
+while getopts "d:f:h:" opt
+do
+   case "$opt" in
+      d ) diag="$OPTARG" ;;
+      f ) folder="$OPTARG" ;;
+      ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
+   esac
+done
+
+# Print helpFunction in case diag bool is not provided
+if [ -z "$diag" ] || [ $diag != "true" ] || [ $diag != "false" ]
+then
+   echo "Please enter valid value for diag i.e either true or false";
+   helpFunction
+fi
+
+echo "Starting to collect data with diag $diag in folder $collect_folder \n"
 
 #Setup directory structure
 echo "Setting up directories \n"
 chmod 755 collect_logs_and_diags.py
-rm -rf tmp/
-mkdir tmp
-mkdir tmp/k8s_data
-mkdir tmp/k8s_data/get
-mkdir tmp/k8s_data/describe
-mkdir tmp/logs
-mkdir tmp/diags
+mkdir $collect_folder
+mkdir $collect_folder/k8s_data
+mkdir $collect_folder/k8s_data/get
+mkdir $collect_folder/k8s_data/describe
+mkdir $collect_folder/logs
+mkdir $collect_folder/diags
 echo "Done setting up directories \n"
 
 #Get all logs and diags
 echo "Started collecting logs and diags \n"
-python collect_logs_and_diags.py
+python collect_logs_and_diags.py -d $diag -f $collect_folder
 echo "Done collecting logs and diags \n"
 
 #Get cluster dump
 echo "Started collecting cluster info \n"
-cd tmp/k8s_data/
+cd $collect_folder/k8s_data/
 kubectl cluster-info dump --all-namespaces > clusterinfodump.txt
 echo "Done collecting cluster info \n"
 
@@ -70,4 +97,4 @@ kubectl describe lm  > licensemaster.txt
 echo "Done collecting kubectl describe command outputs \n"
 
 #All done
-echo "All data requried collected \n"
+echo "All data requried collected under folder $collect_folder\n"
