@@ -21,19 +21,17 @@ def runAndCollectDiag(collectDir, podDiagsDir, pod):
                 diagFile = dirs[3]
 
             #Copy the diag over            
-            executeShellCommand("kubectl cp %s:%s $PWD/%s/%s/%s" % (pod, diagFileFullPath, collectDir, podDiagsDir, diagFile))
+            executeShellCommand("kubectl cp %s:%s %s/%s/%s" % (pod, diagFileFullPath, collectDir, podDiagsDir, diagFile))
 
             #Delete the diag
             executeShellCommand("kubectl exec --stdin %s -- rm -rf %s" % (pod, diagFileFullPath))
-            executeShellCommand("kubectl exec --stdin %s -- rm -rf /opt/splunk/diag*" % (pod))
-
 
 def main(argv):
     #Define required variables
     collectDiag = ''
     collectDir = ''
-    podLogsDir = "logs"
-    podDiagsDir = "diags"
+    podLogsDir = "pod_data/logs"
+    podDiagsDir = "pod_data/diags"
 
     try:
         opts, args = getopt.getopt(argv,"d:f:",["diag=","folder="])
