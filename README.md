@@ -13,28 +13,28 @@ If any of the above is not desired, please resort to collecting data manually.
 - Kubeconfig context set to the cluster running the Splunk Operator for Kubernetes
 - Access to kubectl commands to get data
 - Root access on the host file system to create/delete directories(atleast within the directory where you want to run this script and store logs)
-- Enough space to collect data in a destination folder
+- Enough space to collect data in a target folder
 
 **Script run instructions**
 
-- On your terminal, run `git clone git@github.com:akondur/collect_data_k8s.git` (make sure ssh token is setup, if using https grab the https clone link from `https://github.com/akondur/collect_data_k8s`)
+- Once connected to the cluster, on your terminal, run `git clone git@github.com:akondur/collect_data_k8s.git` (make sure ssh token is setup, if using https grab the https clone link from `https://github.com/akondur/collect_data_k8s`)
 - Run `cd collect_data_k8s`
 - Run `chmod 755 *`
-- Run the script using the following command - `sh collect_data.sh -d <is_diags_required> -f <desination_folder> -a <avoid_describe_option>`. There are three options which are configurable through the script:
-    - The `-d` or `--diag` option which determines whether diags will be collected. This option is `mandatory`(use only `true` or `false`) failing which the script errors out.
-    - The `-f` or `--folder` option to specify a `<destination folder>`. This option is `not mandatory`. The script allows you to store the data collected in two different ways:
-        - If the `-f` or `--folder` option is not used, a timestamped folder `tmp-<timestamp>` is created in the present working directory where the data will be written to. 
+- Run the script using the following command - `sh collect_data.sh -d <is_diags_required> -t <target_folder> -l <limit_output_to_avoid_kubectl_describe>`. There are three options which are configurable through the script:
+    - The `-d` option which determines whether diags will be collected. `false` by default i.e diags are not collected. Set to `true` if diags are required.
+    - The `-t` option to specify a `<target folder>`. This option is `not mandatory`. The script allows you to store the data collected in two different ways:
+        - If the `-t` option is not used, a timestamped folder `tmp-<timestamp>` is created in the present working directory where the data will be written to. 
             ```
             Eg. sh collect_data.sh -d true
             ```                
-        - If the `-f` or `--folder` option is used with valid full path, a timestamped folder `tmp-<timestamp>` is created inside tthe full path where the data will be written to. Note: If the folder provided doesn't exist it is created if the preceeding path to it exists i.e in the example below if `/Users/akondur` is present, `/collect` is created if it doesn't exist or ignored if it exists. But if the preceeding path `/Users/akondur` doesn't exist the script behavior is undocumented.
+        - If the `-t` option is used with valid full path, a timestamped folder `tmp-<timestamp>` is created inside the full path where the data will be written to. Note: If the folder provided doesn't exist it is created if the preceeding path to it exists i.e in the example below if `/Users/akondur` is present, `/collect` is created if it doesn't exist or ignored if it exists. But if the preceeding path `/Users/akondur` doesn't exist the script run might throw errors and there can be unexpected behavior.
             ```    
-            Eg. sh collect_data.sh -d true -f /Users/akondur/collect/
+            Eg. sh collect_data.sh -d true -t /Users/akondur/collect/
             ```
        Please make sure you have enough space in the target folders in either case(for reference look at performance requirements section).
-    - The `-a` option to specify whether you want to avoid `kubectl describe` commands. This option is `not mandatory`. There is an issue in K8S with creating too many clients for describe commands(https://github.com/kubernetes/kubernetes/issues/91913). In my testing these messages have not caused any issues. To avoid the warning messages as well to protect your network bandwidth if limited you can set the `-a` option to true.
+    - The `-l` option to specify whether you want to limit the collection of data by avoiding `kubectl describe` commands. This option is `not mandatory`. There is an issue in K8S with creating too many clients for describe commands(https://github.com/kubernetes/kubernetes/issues/91913). In internal testing these messages have not caused any issues. However, to avoid the warning messages as well to protect your network bandwidth if limited, you can set the `-l` option to `true`. Defaults to `false` i.e describe command outputs are collected.
             ```    
-            Eg. sh collect_data.sh -f /Users/akondur/collect/ -a true
+            Eg. sh collect_data.sh -dst /Users/akondur/collect/ -desc false
             ```
             Example of a warning message from the K8S cluster:
 
@@ -42,7 +42,7 @@ If any of the above is not desired, please resort to collecting data manually.
             W0419 14:46:10.239590   21927 exec.go:203] constructing many client instances from the same exec auth config can cause performance problems during cert rotation and can exhaust available network connections; 1478 clients constructed calling "aws-iam-authenticator"
             ```
 
-- Wait till you see the message `All data requried collected under folder <destination_folder>`
+- Wait till you see the message `All data requried collected under folder <target_folder>`
 
 **Example script run output**
 ```
@@ -72,7 +72,7 @@ Done collecting kubectl describe command outputs
 All data requried collected under folder /Users/akondur/Desktop/operator_training/Data_collection_debug/collect_data_k8s/tmp-2021-04-19-10-37
 ```
 
-**Destination folder breakdown**
+**Target folder breakdown**
 
 **tmp-<ts>/k8s_data/get** - Contains outputs of kubectl get commands for K8S resources in the cluster
 

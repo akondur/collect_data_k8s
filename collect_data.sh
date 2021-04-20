@@ -2,44 +2,52 @@
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -d <is_diag_required> -f <destination_folder> -a <avoid_kubectl_describe>"
-   echo "\t-d Set to true if you require diag. Field is mandatory"
-   echo "\t-f Provide destination folder to store data. Field is not mandatory"
-   echo "\t-a Set to true if you want to avoid kubectl describe commands. Use option only if avoiding kubectl describe commands. Field is not mandatory"
+   echo "Usage: $0 -d <is_diag_required> -t <target_folder> -l <limit_output_to_avoid_kubectl_describe>"
+   echo "\t-d Set to true if you require diag. False by default. Field is not mandatory"
+   echo "\t-t Provide target folder to store data. Field is not mandatory"
+   echo "\t-l Set to true if you want to limit the collection of data by avoid kubectl describe commands. False by default. Field is not mandatory"
    echo "\t-h Displays usage of script"
    exit 1 # Exit script after printing help
 }
 
-while getopts "d:f:a:" opt
+echo $opt
+
+while getopts "d:t:l:" opt
 do
    case "$opt" in
-      d ) diag="$OPTARG" ;;
-      f ) folder="$OPTARG" ;;
-      a ) avoiddescribe="$OPTARG" ;;
+      d) diag="$OPTARG" ;;
+      t) targetfolder="$OPTARG" ;;
+      l) limitandavoiddescribe="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
 
-# Print helpFunction in case diag bool is not provided or has invalid options
-if [ -z "$diag" ] || ([ $diag != "true" ] && [ $diag != "false" ])
+# Print helpFunction in case diag flag is not used properly
+if [ ! -z "$diag" ] && [ $diag != "true" ]
 then
-   echo "Please enter valid value for diag i.e either true or false. -d option cannot be avoided or be empty";
+   echo "Please enter valid value for -d option i.e set to true if diag is required. Use option only if diag is required. False by default.";
    helpFunction
 fi
 
-# Print helpFunction in case avoid describe flag is not used properly
-if [ ! -z "$avoiddescribe" ] && [ $avoiddescribe != "true" ]
+# If diag is empty, default to false
+if [ -z "$diag" ]
 then
-   echo "Please enter valid value for -a option i.e set to true or else avoid option. Use option only if avoiding kubectl describe commands";
+   diag="false"
+fi
+
+# Print helpFunction in case avoid describe flag is not used properly
+if [ ! -z "$limitandavoiddescribe" ] && [ $limitandavoiddescribe != "true" ]
+then
+   echo "Please enter valid value for -l option i.e set to true. Use option only if avoiding kubectl describe commands by setting to true";
    helpFunction
 fi
 
 # Determine full path of where the data needs to be collected
-if [ -z "$folder" ]
+if [ -z "$targetfolder" ]
 then
    collect_folder=$PWD/tmp-$(date "+%F-%H-%M")
 else 
-   collect_folder=$folder/tmp-$(date "+%F-%H-%M")
+   collect_folder=$targetfolder/tmp-$(date "+%F-%H-%M")
 fi
 
 echo "Starting to collect data with diag $diag in folder $collect_folder \n"
@@ -51,7 +59,7 @@ mkdir -p $collect_folder/
 mkdir -p $collect_folder/pod_data
 mkdir -p $collect_folder/k8s_data
 mkdir -p $collect_folder/k8s_data/get
-if [ -z "$avoiddescribe" ]
+if [ -z "$limitandavoiddescribe" ]
 then
    mkdir -p $collect_folder/k8s_data/describe
 fi
@@ -102,7 +110,7 @@ kubectl get lm >> licensemaster.txt; kubectl get lm -o yaml >> licensemaster.txt
 echo "Done collecting kubectl get command outputs \n"
 
 # Implement kubectl describe only if -a option is not used. Avoid describe if -a option is set to true
-if [ -z "$avoiddescribe" ]
+if [ -z "$limitandavoiddescribe" ]
 then
    #Capture kubectl describe command outputs
    echo "Started collecting kubectl describe command outputs \n"
