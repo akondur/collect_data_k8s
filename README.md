@@ -27,7 +27,7 @@ If any of the above is not desired, please resort to collecting data manually.
             ```
             Eg. sh collect_data.sh -d true
             ```                
-        - If the `-t` option is used with valid full path, a timestamped folder `tmp-<timestamp>` is created inside the full path where the data will be written to. Note: If the folder provided doesn't exist it is created if the preceeding path to it exists i.e in the example below if `/Users/akondur` is present, `/collect` is created if it doesn't exist or ignored if it exists. But if the preceeding path `/Users/akondur` doesn't exist the script run might throw errors and there can be unexpected behavior.
+        - If the `-t` option is used with valid full path, a timestamped folder `tmp-<timestamp>` is created inside the full path where the data will be written to. Note: If the folder provided doesn't exist, it is created if the preceeding path to it exists i.e in the example below if `/Users/akondur` is present, `/collect` is created if it doesn't exist or ignored if it exists. But if the preceeding path `/Users/akondur` doesn't exist the script run might throw errors and there can be unexpected behavior.
             ```    
             Eg. sh collect_data.sh -d true -t /Users/akondur/collect/
             ```
